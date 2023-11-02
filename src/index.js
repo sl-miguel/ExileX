@@ -1,7 +1,7 @@
 import { createWebSocketConnection } from 'league-connect';
 import { blue } from 'colorette';
 
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
 import { readdir } from 'fs/promises';
 
@@ -26,7 +26,7 @@ const connectWS = async () => {
 	const files = await readdir(pluginPath);
 
 	for (const file of files) {
-		const filePath = join(pluginPath, file);
+		const filePath = pathToFileURL(join(pluginPath, file)).href; // temp windows fix
 		const { default: Plugin } = await import(filePath);
 		const plugin = new Plugin(ws);
 		ws.subscribe(plugin.endpoint, async (data, event) => await plugin.load(data, event));
