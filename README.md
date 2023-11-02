@@ -16,7 +16,7 @@ To get started with ExileX in development mode, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone "git@github.com:sl-miguel/ExileX.git"
+   git clone "https://github.com/sl-miguel/ExileX.git"
    cd ExileX
    ```
 
