@@ -1,4 +1,4 @@
-# ExileX - League of Legends Automation Companion
+# ExileX - League of Legends Companion
 
 ExileX is a set of automation tools designed to enhance your League of Legends experience.
 
