@@ -2,6 +2,11 @@
 
 ExileX is a set of automation tools designed to enhance your League of Legends experience.
 
+### Features
+
+- Accept your game, when pop up appears
+- Reports players, when end game screen appears
+
 ## 💾 Installation
 
 ### Downloads
