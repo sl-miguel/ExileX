@@ -1,4 +1,4 @@
-# ExileX - League of Legends Automation Companion
+# ExileX - League of Legends Companion
 
 ExileX is a set of automation tools designed to enhance your League of Legends experience.
 
@@ -6,8 +6,9 @@ ExileX is a set of automation tools designed to enhance your League of Legends e
 
 ### Downloads
 
-- Windows (Coming soon)
-- Linux (Coming soon)
+- [Windows](https://github.com/sl-miguel/ExileX/releases/download/v0.1.0/exilex--win.exe)
+- [Linux](https://github.com/sl-miguel/ExileX/releases/download/v0.1.0/exilex--linux.sh)
+- [Mac Os](https://github.com/sl-miguel/ExileX/releases/download/v0.1.0/exilex--macos.app.zip) 
 
 ### Development
 
@@ -16,7 +17,7 @@ To get started with ExileX in development mode, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone "git@github.com:sl-miguel/ExileX.git"
+   git clone "https://github.com/sl-miguel/ExileX.git"
    cd ExileX
    ```
 
