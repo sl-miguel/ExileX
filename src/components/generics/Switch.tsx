@@ -1,8 +1,16 @@
+import { useState } from 'react';
+
 function Switch() {
+	const [isChecked, setIsChecked] = useState(false);
+
+	const handleToggle = () => setIsChecked(!isChecked);
+
 	return (
-		<label className='relative inline-flex items-center cursor-pointer'>
-			<input type='checkbox' value='' className='sr-only peer' />
-			<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+		<label className='flex items-center space-x-2'>
+			<input type='checkbox' onChange={handleToggle} defaultChecked={isChecked} className='hidden' />
+			<span className={`w-10 h-5 ${isChecked ? 'bg-black' : 'bg-gray'} rounded-full p-[2px] flex items-center duration-300 transition-colors relative`}>
+				<span className={`block w-4 h-4 bg-white rounded-full shadow-md transform duration-300 transition-transform ${isChecked ? 'translate-x-5' : ''}`} />
+			</span>
 		</label>
 	);
 }
