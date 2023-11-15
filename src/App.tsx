@@ -15,7 +15,9 @@ function App() {
 	return (
 		<div className='flex'>
 			<Sidebar />
-			<Router />
+			<div className='px-4 py-6 grow'>
+				<Router />
+			</div>
 		</div>
 	);
 }

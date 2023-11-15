@@ -4,7 +4,7 @@ import * as Icons from '../icons';
 
 function Sidebar() {
 	return (
-		<div className='w-28 py-12 h-screen bg-light'>
+		<div className='w-28 py-6 h-screen bg-light shrink-0 grow-0'>
 			<ul className='flex flex-col gap-16 h-full text-center'>
 				<li className='mb-4'>
 					<Link to='/' className='flex justify-center'>
