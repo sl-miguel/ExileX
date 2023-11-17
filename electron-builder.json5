@@ -6,6 +6,7 @@
 	appId: 'exilex.app',
 	asar: true,
 	productName: 'ExileX',
+	icon: 'public/exile.png',
 	directories: {
 		output: 'release/${version}',
 	},
