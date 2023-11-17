@@ -12,7 +12,7 @@ async function createWindow() {
 	win = new BrowserWindow({
 		width: 400,
 		height: 600,
-		icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+		icon: path.join(process.env.VITE_PUBLIC, 'exile.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 		},
