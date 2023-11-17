@@ -7,6 +7,8 @@ function App() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		window.lcu.onConnect((_event: any, value: any) => setLoading(!value));
+		window.lcu.onDisconnect((_event: any, value: any) => setLoading(!value));
 		setTimeout(() => setLoading(false), 3400); // temp
 	}, [loading]);
 

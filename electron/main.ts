@@ -36,5 +36,6 @@ app.on('activate', () => {
 
 (async () => {
 	await app.whenReady();
-	await createWindow();
+	const win = await createWindow();
+	connectWS(win);
 })();
