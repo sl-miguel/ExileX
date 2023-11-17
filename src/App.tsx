@@ -7,11 +7,11 @@ function App() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		// window.lcu.onConnect((event: any, value: any) => console.log(value));
-		setTimeout(() => setLoading(false), 3400);
+		setTimeout(() => setLoading(false), 3400); // temp
 	}, [loading]);
 
 	if (loading) return <Loader />;
+
 	return (
 		<div className='flex'>
 			<Sidebar />
