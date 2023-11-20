@@ -1,8 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('lcu', {
-	onConnect: (callback: any) => ipcRenderer.on('ws-connect', callback),
-	onDisconnect: (callback: any) => ipcRenderer.on('ws-disconnect', callback),
+	connection: (connected: any) => ipcRenderer.on('ws-connection', connected),
 });
 
 // Automate process
@@ -10,7 +9,7 @@ contextBridge.exposeInMainWorld('lcu', {
 
 contextBridge.exposeInMainWorld('utilities', {
 	getFiles: (path: string) => ipcRenderer.invoke('get-files', path),
-	// print: (message: string, ...args: any[]) => ipcRenderer.invoke('print', message, ...args),
+	clientReady: () => ipcRenderer.send('client-loaded'),
 });
 
 // exposeInMainWorld('utilities') - une name of folder

@@ -9,10 +9,10 @@ declare namespace NodeJS {
 
 interface Window {
 	lcu: {
-		onConnect(callback: any): void;
-		onDisconnect(callback: any): void;
+		connection(connected: any): void;
 	};
 	utilities: {
 		print(message: string, ...args: any[]);
+		clientReady(): void;
 	};
 }

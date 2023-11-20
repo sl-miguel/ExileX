@@ -7,9 +7,20 @@ function App() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		window.lcu.onConnect((_event: any, value: any) => setLoading(!value));
-		window.lcu.onDisconnect((_event: any, value: any) => setLoading(!value));
-		setTimeout(() => setLoading(false), 3400); // temp
+		const onPageLoad = () => {
+			console.log('Page loaded !');
+			window.utilities.clientReady();
+		};
+
+		if (document.readyState === 'complete') onPageLoad();
+		else window.addEventListener('load', onPageLoad, false);
+
+		return () => window.removeEventListener('load', onPageLoad);
+	}, []);
+
+	useEffect(() => {
+		console.log('Lcu Connection');
+		window.lcu.connection((_event: any, value: any) => setLoading(value));
 	}, [loading]);
 
 	if (loading) return <Loader />;

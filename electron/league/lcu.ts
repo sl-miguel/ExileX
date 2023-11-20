@@ -14,12 +14,13 @@ const connectWS = async (win: BrowserWindow) => {
 
 	ws.on('close', () => {
 		console.log(`[Node] League Client diconnected`);
-		win.webContents.send('ws-disconnect', false);
+		win.webContents.send('ws-connection', true);
 		connectWS(win);
 	});
 
 	console.log('League Client Found!');
-	win.webContents.send('ws-connect', true);
+	win.webContents.send('ws-connection', false);
+
 	return ws;
 };
 

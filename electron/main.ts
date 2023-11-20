@@ -37,5 +37,5 @@ app.on('activate', () => {
 (async () => {
 	await app.whenReady();
 	const win = await createWindow();
-	connectWS(win);
+	ipcMain.on('client-loaded', () => connectWS(win));
 })();
