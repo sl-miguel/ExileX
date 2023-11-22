@@ -7,12 +7,4 @@ declare namespace NodeJS {
 	}
 }
 
-interface Window {
-	lcu: {
-		connection(connected: any): void;
-	};
-	utilities: {
-		print(message: string, ...args: any[]);
-		clientReady(): void;
-	};
-}
+interface Window {}

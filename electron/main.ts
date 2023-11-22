@@ -1,6 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
-import connectWS from './league/lcu';
+require('@electron/remote/main').initialize();
 
 process.env.DIST = path.join(__dirname, '../dist');
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public');
@@ -14,7 +14,8 @@ async function createWindow() {
 		height: 600,
 		icon: path.join(process.env.VITE_PUBLIC, 'exile.svg'),
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.js'),
+			contextIsolation: false,
+			nodeIntegration: true,
 		},
 	});
 
@@ -34,8 +35,11 @@ app.on('activate', () => {
 	if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
+app.on('browser-window-created', (_, window) => {
+	require('@electron/remote/main').enable(window.webContents);
+});
+
 (async () => {
 	await app.whenReady();
-	const win = await createWindow();
-	ipcMain.on('client-loaded', () => connectWS(win));
+	await createWindow();
 })();

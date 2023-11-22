@@ -1,14 +1,13 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter as Router } from 'react-router-dom';
-
+import { LcuProvider } from './context/LeagueContext.tsx';
 import App from './App.tsx';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-	<React.StrictMode>
+	<LcuProvider>
 		<Router>
 			<App />
 		</Router>
-	</React.StrictMode>
+	</LcuProvider>
 );

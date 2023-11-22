@@ -1,29 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useLcu } from './context/LeagueContext';
 import Sidebar from './components/sidebar/Sidebar';
 import Router from './components/Router';
 import Loader from './pages/Loader';
 
 function App() {
-	const [loading, setLoading] = useState(true);
+	const { isConnected } = useLcu();
 
 	useEffect(() => {
-		const onPageLoad = () => {
-			console.log('Page loaded !');
-			window.utilities.clientReady();
-		};
+		console.log('Loader is', isConnected ? 'on' : 'off');
+	}, [isConnected]);
 
-		if (document.readyState === 'complete') onPageLoad();
-		else window.addEventListener('load', onPageLoad, false);
-
-		return () => window.removeEventListener('load', onPageLoad);
-	}, []);
-
-	useEffect(() => {
-		console.log('Lcu Connection');
-		window.lcu.connection((_event: any, value: any) => setLoading(value));
-	}, [loading]);
-
-	if (loading) return <Loader />;
+	if (!isConnected) return <Loader />;
 
 	return (
 		<div className='flex'>
