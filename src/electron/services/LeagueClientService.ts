@@ -1,18 +1,24 @@
-import {
-  authenticate,
-  createHttp1Request,
-  createWebSocketConnection,
-  LeagueWebSocket,
-  Credentials,
-  HttpRequestOptions,
-} from 'league-connect';
+import { BrowserWindow } from 'electron';
+// import {
+//   authenticate,
+//   createHttp1Request,
+//   createWebSocketConnection,
+//   LeagueWebSocket,
+//   Credentials,
+//   HttpRequestOptions,
+// } from 'league-connect';
+
+const league = require('league-connect');
+import { LeagueWebSocket, Credentials, HttpRequestOptions } from 'league-connect';
 
 class LeagueClientService {
+  win: BrowserWindow;
   ws: LeagueWebSocket | null;
   subscriptions: Map<string, Function>;
   credentials: Credentials | null;
 
-  constructor() {
+  constructor(win: BrowserWindow) {
+    this.win = win;
     this.ws = null;
     this.subscriptions = new Map();
     this.credentials = null;
@@ -21,7 +27,7 @@ class LeagueClientService {
 
   async connect() {
     console.log('[Node] Wainting for league Client');
-    this.ws = await createWebSocketConnection({
+    this.ws = await league.createWebSocketConnection({
       authenticationOptions: {
         awaitConnection: true,
       },
@@ -33,14 +39,15 @@ class LeagueClientService {
     this.listeners();
     this.authenticate();
     this.resubscribe();
+    this.win.webContents.send('lcu-is-connected', true);
   }
 
   async authenticate() {
-    this.credentials = await authenticate();
+    this.credentials = await league.authenticate();
   }
 
   async request({ method, url }: HttpRequestOptions) {
-    const response = await createHttp1Request({ method, url }, this.credentials!);
+    const response = await league.createHttp1Request({ method, url }, this.credentials!);
     return response;
   }
 
@@ -48,6 +55,7 @@ class LeagueClientService {
     if (!this.ws) return;
     this.ws.on('close', () => {
       console.log(`League Client disconnected`);
+      this.win.webContents.send('lcu-is-connected', false);
       this.connect();
     });
   }
