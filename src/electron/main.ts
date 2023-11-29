@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import PluginService from './services/PluginService';
+import LeagueClientService from './services/LeagueClientService';
 
 process.env.DIST = path.join(__dirname, '../dist');
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public');
@@ -38,6 +39,9 @@ const createWindow = async () => {
 
   const service = new PluginService();
   await service.load();
+
+  const lcu = new LeagueClientService(win);
+  lcu.connect();
 
   ipcMain.on('plugins-mounted', () => {
     const plugins = service.getPlugins();
