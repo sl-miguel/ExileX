@@ -1,12 +1,21 @@
-import { createWebSocketConnection, LeagueWebSocket } from 'league-connect';
+import {
+  authenticate,
+  createHttp1Request,
+  createWebSocketConnection,
+  LeagueWebSocket,
+  Credentials,
+  HttpRequestOptions,
+} from 'league-connect';
 
 class LeagueClientService {
   ws: LeagueWebSocket | null;
   subscriptions: Map<string, Function>;
+  credentials: Credentials | null;
 
   constructor() {
     this.ws = null;
     this.subscriptions = new Map();
+    this.credentials = null;
     this.connect();
   }
 
@@ -22,7 +31,17 @@ class LeagueClientService {
 
     console.log('League Client Found!');
     this.listeners();
+    this.authenticate();
     this.resubscribe();
+  }
+
+  async authenticate() {
+    this.credentials = await authenticate();
+  }
+
+  async request({ method, url }: HttpRequestOptions) {
+    const response = await createHttp1Request({ method, url }, this.credentials!);
+    return response;
   }
 
   listeners() {
@@ -55,4 +74,4 @@ class LeagueClientService {
   }
 }
 
-module.exports = LeagueClientService;
+export default LeagueClientService;
