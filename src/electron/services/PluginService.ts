@@ -23,9 +23,11 @@ class PluginService {
 
       const plugin = new Plugin();
       const pluginSettings = plugin.setup();
+      const titleObject = pluginSettings.find((item: any) => item.type === 'title');
 
       const pluginObject = {
-        name: pluginPath,
+        id: pluginPath,
+        name: titleObject?.title || pluginPath,
         settings: pluginSettings,
         path,
       };
