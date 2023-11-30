@@ -46,8 +46,8 @@ class LeagueClientService {
     this.credentials = await league.authenticate();
   }
 
-  async request({ method, url }: HttpRequestOptions) {
-    const response = await league.createHttp1Request({ method, url }, this.credentials!);
+  async request({ method, url, body }: HttpRequestOptions) {
+    const response = await league.createHttp1Request({ method, url, body }, this.credentials!);
     return response;
   }
 

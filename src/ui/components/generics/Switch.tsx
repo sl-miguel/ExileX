@@ -1,22 +1,15 @@
-import { useState } from 'react';
+interface SwitchProps {
+  checked: boolean;
+  onChange: () => void;
+}
 
-function Switch({ checked = false }) {
-  const [isChecked, setIsChecked] = useState(checked);
-
-  const handleToggle = () => setIsChecked(!isChecked);
-
+function Switch({ checked = false, onChange }: SwitchProps) {
   return (
     <label className="flex items-center">
-      <input type="checkbox" onChange={handleToggle} defaultChecked={isChecked} className="hidden" />
-      <span
-        className={`h-5 w-10 ${
-          isChecked ? 'bg-black' : 'bg-gray'
-        } relative flex items-center rounded-full p-[2px] transition-colors duration-300`}
-      >
+      <input type="checkbox" onChange={onChange} defaultChecked={checked} className="hidden" />
+      <span className={`h-5 w-10 ${checked ? 'bg-black' : 'bg-gray'} relative flex items-center rounded-full p-[2px] transition-colors duration-300`}>
         <span
-          className={`block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
-            isChecked ? 'translate-x-5' : ''
-          }`}
+          className={`block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${checked ? 'translate-x-5' : ''}`}
         />
       </span>
     </label>

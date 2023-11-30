@@ -1,7 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { useEffect, useState } from 'react';
 
-import Switch from '../components/generics/Switch';
 import Toggle from '../components/settings/Toggle';
 import Slider from '../components/settings/Slider';
 import Radio from '../components/settings/Radio';
@@ -14,7 +13,15 @@ import AccordionHeader from '../components/accordion/AccordionHeader';
 function Plugins() {
   const [plugins, setPlugins] = useState([]);
 
-  // const updateSettings = (name: string) => {};
+  const handleSettings = (plugin: any, setting: any) => {
+    console.log('Settings:', plugin, setting);
+    ipcRenderer.send('settings', { plugin, setting });
+  };
+
+  const handlePlugins = (plugin: any) => {
+    console.log('plugins:', plugin);
+    ipcRenderer.send('plugins', plugin);
+  };
 
   useEffect(() => {
     const handlePlugins = (_: any, plugins: any) => {
@@ -22,7 +29,7 @@ function Plugins() {
       setPlugins(plugins);
     };
 
-    ipcRenderer.send('plugins-mounted');
+    ipcRenderer.send('request-plugins');
     ipcRenderer.on('plugins', handlePlugins);
 
     return () => {
@@ -34,17 +41,17 @@ function Plugins() {
     <div>
       {plugins.map((plugin: any) => (
         <Accordion key={plugin.id}>
-          <AccordionHeader>
+          <AccordionHeader plugin={plugin} toParent={handlePlugins}>
             <h1>{plugin.name}</h1>
           </AccordionHeader>
           <AccordionBody>
+            <p className="py-2 text-gray">{plugin.description}</p>
             {plugin.settings.map((setting: any, index: number) => (
               <div key={`${plugin.id}-${index}`}>
-                {setting.type === 'description' && <p>{setting.description}</p>}
-                {setting.type === 'toggle' && <Toggle text={setting.text} value={setting.value} />}
-                {setting.type === 'slider' && <Slider defaultValue={1} />}
-                {setting.type === 'radio' && <Radio id={setting.id} options={setting.options} defaultValue={setting.value} />}
-                {setting.type === 'text' && <Text text={setting.text} />}
+                {setting.type === 'toggle' && <Toggle plugin={plugin} setting={setting} toParent={handleSettings} />}
+                {setting.type === 'slider' && <Slider plugin={plugin} setting={setting} toParent={handleSettings} />}
+                {setting.type === 'radio' && <Radio plugin={plugin} setting={setting} toParent={handleSettings} />}
+                {setting.type === 'text' && <Text plugin={plugin} setting={setting} toParent={handleSettings} />}
                 {setting.type === 'button' && <Button text={setting.text} />}
               </div>
             ))}

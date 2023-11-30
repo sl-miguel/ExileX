@@ -39,4 +39,4 @@ class StoreService {
   }
 }
 
-module.exports = StoreService;
+export default StoreService;

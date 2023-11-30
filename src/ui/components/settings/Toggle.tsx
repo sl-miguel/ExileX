@@ -1,15 +1,24 @@
+import { useEffect, useState } from 'react';
 import Switch from '../generics/Switch';
 
 interface ToggleProps {
-  text: string;
-  value: boolean;
+  plugin: any;
+  setting: any;
+  toParent: (plugin: any, updatedSetting: any) => void;
 }
 
-function Toggle({ text, value }: ToggleProps) {
+function Toggle({ plugin, setting, toParent }: ToggleProps) {
+  const [value, setValue] = useState(setting.value);
+
+  useEffect(() => {
+    const updatedSettings = { ...setting, value };
+    toParent(plugin, updatedSettings);
+  }, [value]);
+
   return (
     <div className="flex justify-between">
-      <span>{text}</span>
-      <Switch checked={value} />
+      <span>{setting.text}</span>
+      <Switch checked={value} onChange={() => setValue(!value)} />
     </div>
   );
 }
