@@ -15,25 +15,25 @@ function Plugins() {
 
   const handleSettings = (plugin: any, setting: any) => {
     console.log('Settings:', plugin, setting);
-    ipcRenderer.send('settings', { plugin, setting });
+    ipcRenderer.send('updatedSettings', { plugin, setting });
   };
 
   const handlePlugins = (plugin: any) => {
     console.log('plugins:', plugin);
-    ipcRenderer.send('plugins', plugin);
+    ipcRenderer.send('updatedPlugins', { plugin });
   };
 
   useEffect(() => {
-    const handlePlugins = (_: any, plugins: any) => {
+    const updatePlugins = (_: any, plugins: any) => {
       console.log('Got plugins settings', plugins);
       setPlugins(plugins);
     };
 
     ipcRenderer.send('request-plugins');
-    ipcRenderer.on('plugins', handlePlugins);
+    ipcRenderer.on('plugins', updatePlugins);
 
     return () => {
-      ipcRenderer.removeListener('plugins', handlePlugins);
+      ipcRenderer.removeListener('plugins', updatePlugins);
     };
   }, []);
 

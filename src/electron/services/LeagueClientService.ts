@@ -22,7 +22,6 @@ class LeagueClientService {
     this.ws = null;
     this.subscriptions = new Map();
     this.credentials = null;
-    this.connect();
   }
 
   async connect() {
@@ -62,12 +61,17 @@ class LeagueClientService {
 
   subscribe(endpoint: string, callback: Function) {
     if (!this.ws) return;
+    if (this.subscriptions.has(endpoint)) return;
     console.log('Subscribing to', endpoint);
     this.ws.subscribe(endpoint, async (data, event) => await callback(data, event));
     this.subscriptions.set(endpoint, callback);
   }
 
   unsubscribe(endpoint: string) {
+    if (!this.ws) return;
+    if (!this.subscriptions.has(endpoint)) return;
+    console.log('Unsubscribing from', endpoint);
+    this.ws.unsubscribe(endpoint);
     this.subscriptions.delete(endpoint);
   }
 

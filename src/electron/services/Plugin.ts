@@ -20,7 +20,23 @@ class Plugin {
 
   get() {
     return this.data;
-    // return [this.plugins, this.settings];
+  }
+
+  setActive(id: string, active: boolean) {
+    const actualPlugin = this.plugins.get(id);
+    actualPlugin.active = active;
+    this.plugins.set(id, actualPlugin);
+  }
+
+  setSetting(id: string, newSetting: any) {
+    const actualSettings = this.settings.get(id);
+
+    const updatedSettings = actualSettings.map((setting: any) => {
+      if (setting.id === newSetting.id) return newSetting;
+      return setting;
+    });
+
+    this.settings.set(id, updatedSettings);
   }
 
   async load() {
@@ -54,6 +70,10 @@ class Plugin {
     if (!plugin.active) return this.lcu.unsubscribe(plugin.endpoint);
     this.lcu.subscribe(plugin.endpoint, async (_data: any, event: any) => await plugin.execute(getSetting, this.lcu, event));
   }
+
+  // async update(id: string, plugin: any) {
+  //   this.plugins.set
+  // }
 
   private getSetting(id: string, settingId: string) {
     const settings = this.settings.get(id);

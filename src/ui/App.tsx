@@ -11,6 +11,11 @@ function App() {
     ipcRenderer.on('lcu-is-connected', (_, value: boolean) => setLoading(!value));
   }, []);
 
+  // temp
+  useEffect(() => {
+    ipcRenderer.send('is-connected', !loading);
+  }, [loading]);
+
   if (loading) return <Loader />;
 
   return (

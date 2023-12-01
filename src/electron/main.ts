@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
-import PluginService from './services/PluginService';
 import LeagueClientService from './services/LeagueClientService';
 import Plugin from './services/Plugin';
 
@@ -48,16 +47,29 @@ const createWindow = async () => {
     const plugins = pluginLoader.get();
     console.log(plugins);
     win.webContents.send('plugins', plugins);
-
-    await pluginLoader.execute('Accept.js');
-    await pluginLoader.execute('Report.js');
   });
 
-  ipcMain.on('settings', async (_, { plugin, setting }) => {
-    console.log('Settings', plugin, setting);
+  async function startPlugins() {
+    console.log('Loading plugins');
+    const plugins = pluginLoader.get();
+    for (const plugin of plugins) {
+      // @ts-ignore
+      await pluginLoader.execute(plugin.id);
+    }
+  }
+
+  ipcMain.on('is-connected', (_, connected: boolean) => {
+    console.log('isConnected', connected);
+    if (connected) startPlugins();
   });
 
-  ipcMain.on('plugins', async (_, { plugin }) => {
-    console.log('Settings', plugin);
+  ipcMain.on('updatedSettings', async (_, { plugin, setting }) => {
+    pluginLoader.setSetting(plugin.id, setting);
+    startPlugins();
+  });
+
+  ipcMain.on('updatedPlugins', async (_, { plugin }) => {
+    pluginLoader.setActive(plugin.id, plugin.active);
+    startPlugins();
   });
 })();
