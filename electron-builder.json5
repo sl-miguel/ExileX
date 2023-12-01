@@ -1,13 +1,13 @@
 {
   $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
   appId: 'exilex.app',
-  asar: true,
+  asar: false,
   productName: 'exile',
   icon: 'public/exile.png',
   directories: {
     output: 'release/${version}',
   },
-  files: ['dist', 'dist-electron'],
+  files: ['dist', 'dist-electron', 'plugins'],
   mac: {
     target: ['dmg'],
     artifactName: '${productName}-Mac-${version}-Installer.${ext}',
