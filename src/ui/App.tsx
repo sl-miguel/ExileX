@@ -11,7 +11,6 @@ function App() {
     ipcRenderer.on('lcu-is-connected', (_, value: boolean) => setLoading(!value));
   }, []);
 
-  // temp
   useEffect(() => {
     ipcRenderer.send('is-connected', !loading);
   }, [loading]);
@@ -21,7 +20,7 @@ function App() {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="grow px-4 py-6">
+      <div className="h-screen grow overflow-y-scroll px-4 py-6 [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar]:w-1  [&::-webkit-scrollbar]:bg-gray">
         <Router />
       </div>
     </div>
