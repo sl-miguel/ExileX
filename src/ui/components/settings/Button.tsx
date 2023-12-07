@@ -1,11 +1,16 @@
 interface ButtonProps {
-  text: string;
+  plugin: any;
+  setting: any;
+  toParent: (plugin: any, setting: any) => void;
 }
 
-function Button({ text }: ButtonProps) {
+function Button({ plugin, setting, toParent }: ButtonProps) {
   return (
-    <button className="my-2 flex h-9 w-full cursor-pointer items-center justify-center rounded-3xl border-none bg-black py-1 text-white">
-      {text}
+    <button
+      onClick={() => toParent(plugin, setting)}
+      className="my-2 flex h-9 w-full cursor-pointer items-center justify-center rounded-3xl border-none bg-black py-1 text-white"
+    >
+      {setting.text}
     </button>
   );
 }

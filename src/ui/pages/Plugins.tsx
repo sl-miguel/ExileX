@@ -15,12 +15,17 @@ function Plugins() {
 
   const handleSettings = (plugin: any, setting: any) => {
     console.log('Settings:', plugin, setting);
-    ipcRenderer.send('updatedSettings', { plugin, setting });
+    ipcRenderer.send('settings[update]', { plugin, setting });
   };
 
   const handlePlugins = (plugin: any) => {
     console.log('plugins:', plugin);
-    ipcRenderer.send('updatedPlugins', { plugin });
+    ipcRenderer.send('plugins[update]', { plugin });
+  };
+
+  const handlePress = (plugin: any, setting: any) => {
+    console.log('Pressed', plugin, setting);
+    ipcRenderer.send('handle[button]', { plugin, setting });
   };
 
   useEffect(() => {
@@ -29,18 +34,18 @@ function Plugins() {
       setPlugins(plugins);
     };
 
-    ipcRenderer.send('request-plugins');
-    ipcRenderer.on('plugins', updatePlugins);
+    ipcRenderer.send('plugins[request]');
+    ipcRenderer.on('plugins[response]', updatePlugins);
 
     return () => {
-      ipcRenderer.removeListener('plugins', updatePlugins);
+      ipcRenderer.removeListener('plugins[response]', updatePlugins);
     };
   }, []);
 
   return (
     <div>
       {plugins.map((plugin: any) => (
-        <Accordion key={plugin.id}>
+        <Accordion key={plugin.id} open={plugin.active}>
           <AccordionHeader plugin={plugin} toParent={handlePlugins}>
             <h1>{plugin.name}</h1>
           </AccordionHeader>
@@ -52,7 +57,7 @@ function Plugins() {
                 {setting.type === 'slider' && <Slider plugin={plugin} setting={setting} toParent={handleSettings} />}
                 {setting.type === 'radio' && <Radio plugin={plugin} setting={setting} toParent={handleSettings} />}
                 {setting.type === 'text' && <Text plugin={plugin} setting={setting} toParent={handleSettings} />}
-                {setting.type === 'button' && <Button text={setting.text} />}
+                {setting.type === 'button' && <Button plugin={plugin} setting={setting} toParent={handlePress} />}
               </div>
             ))}
           </AccordionBody>

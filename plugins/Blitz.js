@@ -12,12 +12,28 @@ class Blitz {
     const configuration = [
       { id: 'blitz.radio', type: 'radio', value: 'Jungle', options: ['Lane', 'Jungle'] },
       { id: 'blitz.button', type: 'button', text: 'Validate' },
+      { id: 'blitz.button.outline', type: 'button', text: 'Outline' },
     ];
 
     return configuration;
   }
 
-  // async execute(data, event) {}
+  async execute() {
+    console.log('Plugin Blitz.js executed.');
+  }
+
+  async onPress(getSetting, lcu, settingId) {
+    const button = getSetting('blitz.button');
+    const outline = getSetting('blitz.button.outline');
+
+    if (button.id === settingId) {
+      console.log('Plugin Blitz.js pressed.', settingId);
+    }
+
+    if (outline.id === settingId) {
+      console.log('Plugin Blitz.js pressed.', settingId);
+    }
+  }
 }
 
 module.exports = Blitz;

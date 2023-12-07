@@ -71,9 +71,12 @@ class Plugin {
     this.lcu.subscribe(plugin.endpoint, async (_data: any, event: any) => await plugin.execute(getSetting, this.lcu, event));
   }
 
-  // async update(id: string, plugin: any) {
-  //   this.plugins.set
-  // }
+  async activate(pluginId: string, settingId: string) {
+    const plugin = this.plugins.get(pluginId);
+    if (!plugin.onPress) return console.log(`${plugin.name} has no onPress method.`);
+    const getSetting = (id: string) => this.getSetting(pluginId, id);
+    await plugin.onPress(getSetting, this.lcu, settingId);
+  }
 
   private getSetting(id: string, settingId: string) {
     const settings = this.settings.get(id);
