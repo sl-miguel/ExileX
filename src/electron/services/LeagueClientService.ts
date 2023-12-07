@@ -1,12 +1,4 @@
 import { BrowserWindow } from 'electron';
-// import {
-//   authenticate,
-//   createHttp1Request,
-//   createWebSocketConnection,
-//   LeagueWebSocket,
-//   Credentials,
-//   HttpRequestOptions,
-// } from 'league-connect';
 
 const league = require('league-connect');
 import { LeagueWebSocket, Credentials, HttpRequestOptions } from 'league-connect';
@@ -36,8 +28,8 @@ class LeagueClientService {
 
     console.log('League Client Found!');
     this.listeners();
-    this.authenticate();
     this.resubscribe();
+    await this.authenticate();
     this.win.webContents.send('lcu-is-connected', true);
   }
 
