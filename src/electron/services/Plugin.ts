@@ -26,6 +26,12 @@ class Plugin {
     const actualPlugin = this.plugins.get(id);
     actualPlugin.active = active;
     this.plugins.set(id, actualPlugin);
+
+    // TEMP: Remove this.data eventually
+    this.data = this.data.map((plugin: any) => {
+      if (plugin.id === id) return { ...plugin, active };
+      return plugin;
+    });
   }
 
   setSetting(id: string, newSetting: any) {
@@ -37,6 +43,19 @@ class Plugin {
     });
 
     this.settings.set(id, updatedSettings);
+
+    // TEMP: Remove this.data eventually
+    const pluginToUpdate: any = this.data.find((plugin: any) => plugin.id === id);
+    if (!pluginToUpdate) return;
+
+    pluginToUpdate.settings = updatedSettings;
+
+    const updatedData = this.data.map((plugin: any) => {
+      if (plugin.id === id) return pluginToUpdate;
+      return plugin;
+    });
+
+    this.data = updatedData;
   }
 
   async load() {
@@ -53,6 +72,7 @@ class Plugin {
       this.settings.set(pluginPath, settings);
       this.plugins.set(pluginPath, plugin);
 
+      // TEMP: Remove this.data eventually
       this.data.push({
         id: pluginPath,
         name: plugin.name,
