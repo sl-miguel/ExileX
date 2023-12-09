@@ -6,56 +6,36 @@ import LeagueClientService from './LeagueClientService';
 class Plugin {
   win: BrowserWindow;
   lcu: LeagueClientService;
-  plugins: Map<string, any>;
-  settings: Map<string, any>;
-  data: object[];
+  scripts: Map<string, any>;
 
   constructor(win: BrowserWindow, lcu: LeagueClientService) {
-    this.plugins = new Map();
-    this.settings = new Map();
-    this.data = [];
+    this.scripts = new Map();
     this.win = win;
     this.lcu = lcu;
   }
 
   get() {
-    return this.data;
+    return [...this.scripts.values()];
   }
 
   setActive(id: string, active: boolean) {
-    const actualPlugin = this.plugins.get(id);
-    actualPlugin.active = active;
-    this.plugins.set(id, actualPlugin);
+    const script = this.scripts.get(id);
+    if (!script) return;
 
-    // TEMP: Remove this.data eventually
-    this.data = this.data.map((plugin: any) => {
-      if (plugin.id === id) return { ...plugin, active };
-      return plugin;
-    });
+    script.active = active;
+    this.scripts.set(id, script);
   }
 
   setSetting(id: string, newSetting: any) {
-    const actualSettings = this.settings.get(id);
+    const script = this.scripts.get(id);
+    if (!script) return;
 
-    const updatedSettings = actualSettings.map((setting: any) => {
-      if (setting.id === newSetting.id) return newSetting;
-      return setting;
+    const updateSettings = script.settings.map((setting: any) => {
+      return setting.id === newSetting.id ? newSetting : setting;
     });
 
-    this.settings.set(id, updatedSettings);
-
-    // TEMP: Remove this.data eventually
-    const pluginToUpdate: any = this.data.find((plugin: any) => plugin.id === id);
-    if (!pluginToUpdate) return;
-
-    pluginToUpdate.settings = updatedSettings;
-
-    const updatedData = this.data.map((plugin: any) => {
-      if (plugin.id === id) return pluginToUpdate;
-      return plugin;
-    });
-
-    this.data = updatedData;
+    script.settings = updateSettings;
+    this.scripts.set(id, script);
   }
 
   async load() {
@@ -69,42 +49,38 @@ class Plugin {
       const plugin = new Plugin();
       const settings = plugin.setup();
 
-      this.settings.set(pluginPath, settings);
-      this.plugins.set(pluginPath, plugin);
-
-      // TEMP: Remove this.data eventually
-      this.data.push({
+      const pluginObject = {
         id: pluginPath,
         name: plugin.name,
         description: plugin.description,
         active: plugin.active,
         settings: settings,
-      });
+      };
+
+      this.scripts.set(pluginPath, pluginObject);
     }
   }
 
   async execute(id: string) {
-    const plugin = this.plugins.get(id);
-    const getSetting = (settingId: string) => this.getSetting(id, settingId);
+    const script = this.scripts.get(id);
+    if (script) return;
 
-    if (!plugin.active) return this.lcu.unsubscribe(plugin.endpoint);
-    this.lcu.subscribe(plugin.endpoint, async (_data: any, event: any) => await plugin.execute(getSetting, this.lcu, event));
+    const getSetting = (settingId: string) => this.getSetting(id, settingId);
+    if (!script.active) return this.lcu.unsubscribe(script.endpoint);
+    this.lcu.subscribe(script.endpoint, async (_data: any, event: any) => await script.execute(getSetting, this.lcu, event));
   }
 
   async activate(pluginId: string, settingId: string) {
-    const plugin = this.plugins.get(pluginId);
+    const plugin = this.scripts.get(pluginId);
     if (!plugin.onPress) return console.log(`${plugin.name} has no onPress method.`);
     const getSetting = (id: string) => this.getSetting(pluginId, id);
     await plugin.onPress(getSetting, this.lcu, settingId);
   }
 
   private getSetting(id: string, settingId: string) {
-    const settings = this.settings.get(id);
-    for (const setting of settings) {
-      if (setting.id === settingId) {
-        return setting;
-      }
-    }
+    const script = this.scripts.get(id);
+    if (!script) return;
+    return script.settings.find((setting: any) => setting.id === settingId);
   }
 }
 
