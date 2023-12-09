@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron';
-import path from 'path';
+import { join } from 'path';
 import fs from 'fs';
 import LeagueClientService from './LeagueClientService';
 
@@ -39,31 +39,25 @@ class Plugin {
   }
 
   async load() {
-    const basePath = path.join(__dirname, '../plugins');
+    const basePath = join(__dirname, '../plugins');
     const pluginsFiles = fs.readdirSync(basePath);
 
     for (const pluginPath of pluginsFiles) {
-      const path = `${basePath}\\${pluginPath}`;
+      const path = join(basePath, pluginPath);
       const Plugin = await require(path);
 
       const plugin = new Plugin();
       const settings = plugin.setup();
 
-      const pluginObject = {
-        id: pluginPath,
-        name: plugin.name,
-        description: plugin.description,
-        active: plugin.active,
-        settings: settings,
-      };
-
-      this.scripts.set(pluginPath, pluginObject);
+      plugin.id = pluginPath;
+      plugin.settings = settings;
+      this.scripts.set(pluginPath, plugin);
     }
   }
 
   async execute(id: string) {
     const script = this.scripts.get(id);
-    if (script) return;
+    if (!script) return;
 
     const getSetting = (settingId: string) => this.getSetting(id, settingId);
     if (!script.active) return this.lcu.unsubscribe(script.endpoint);
