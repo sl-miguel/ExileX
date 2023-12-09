@@ -57,10 +57,11 @@ class Plugin {
       plugin.id = pluginPath;
       plugin.settings = settings;
 
-      const storedScripts = await this.store.getItem(pluginPath);
-      if (storedScripts) {
-        console.log('store:found', storedScripts);
-        this.scripts.set(pluginPath, JSON.parse(storedScripts));
+      const storedScript = await this.store.getItem(pluginPath);
+      if (storedScript) {
+        const parsedScript = JSON.parse(storedScript);
+        Object.assign(plugin, parsedScript);
+        this.scripts.set(pluginPath, plugin);
         continue;
       }
 
