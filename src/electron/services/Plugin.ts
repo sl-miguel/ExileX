@@ -2,16 +2,19 @@ import { BrowserWindow } from 'electron';
 import { join } from 'path';
 import fs from 'fs';
 import LeagueClientService from './LeagueClientService';
+import StoreService from './StoreService';
 
 class Plugin {
   win: BrowserWindow;
   lcu: LeagueClientService;
   scripts: Map<string, any>;
+  store: StoreService;
 
   constructor(win: BrowserWindow, lcu: LeagueClientService) {
     this.scripts = new Map();
     this.win = win;
     this.lcu = lcu;
+    this.store = new StoreService(win);
   }
 
   get() {
@@ -24,6 +27,7 @@ class Plugin {
 
     script.active = active;
     this.scripts.set(id, script);
+    this.store.setItem(id, JSON.stringify(script));
   }
 
   setSetting(id: string, newSetting: any) {
@@ -36,6 +40,7 @@ class Plugin {
 
     script.settings = updateSettings;
     this.scripts.set(id, script);
+    this.store.setItem(id, JSON.stringify(script));
   }
 
   async load() {
@@ -51,7 +56,16 @@ class Plugin {
 
       plugin.id = pluginPath;
       plugin.settings = settings;
+
+      const storedScripts = await this.store.getItem(pluginPath);
+      if (storedScripts) {
+        console.log('store:found', storedScripts);
+        this.scripts.set(pluginPath, JSON.parse(storedScripts));
+        continue;
+      }
+
       this.scripts.set(pluginPath, plugin);
+      this.store.setItem(pluginPath, JSON.stringify(plugin));
     }
   }
 
