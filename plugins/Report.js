@@ -47,13 +47,15 @@ class Report {
 
     // Report Players
     console.log('Reports:');
-
     const myAllies = event.data.teams.find((team) => team.players.some((player) => player.summonerId === accountInfos.summonerId));
 
     for (const team of event.data.teams) {
       for (const player of team.players) {
-        // player.isPlayerTeam: true
-        console.log('plugin:report', reportAllies, myAllies, myAllies.teamId, team.teamId);
+        if (player.summonerId === accountInfos.summonerId) {
+          console.log(`- ${player.summonerName} was skipped because it's you.`);
+          continue;
+        }
+
         if (!reportAllies.value && myAllies.teamId === team.teamId) {
           console.log(`- ${player.summonerName} was skipped because it's your allie.`);
           continue;
@@ -69,12 +71,7 @@ class Report {
           continue;
         }
 
-        if (player.summonerId === accountInfos.summonerId) {
-          console.log(`- ${player.summonerName} was skipped because it's you.`);
-          continue;
-        }
-
-        if (reportFriends && friendsList.includes(player.summonerId)) {
+        if (!reportFriends.value && friendsList.includes(player.summonerId)) {
           console.log(`- ${player.summonerName} was skipped because it's your friend.`);
           continue;
         }
