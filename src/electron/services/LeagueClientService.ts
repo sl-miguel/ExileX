@@ -53,7 +53,7 @@ class LeagueClientService {
 
   subscribe(endpoint: string, callback: Function) {
     if (!this.ws) return;
-    if (this.subscriptions.has(endpoint)) return;
+    if (this.subscriptions.has(endpoint)) this.unsubscribe(endpoint);
     console.log('Subscribing to', endpoint);
     this.ws.subscribe(endpoint, async (data, event) => await callback(data, event));
     this.subscriptions.set(endpoint, callback);

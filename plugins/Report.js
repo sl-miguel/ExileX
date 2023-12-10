@@ -28,8 +28,8 @@ class Report {
 
     const friendsList = [];
     const reportFriends = getSetting('report.friends');
-    // const reportEnemies = getSetting('report.enemies');
-    // const reportAllies = getSetting('report.allies');
+    const reportEnemies = getSetting('report.enemies');
+    const reportAllies = getSetting('report.allies');
     const reportMessage = getSetting('report.message.text');
 
     // Get accountInfos
@@ -47,9 +47,23 @@ class Report {
 
     // Report Players
     console.log('Reports:');
+
+    const myAllies = event.data.teams.find((team) => team.players.some((player) => player.summonerId === accountInfos.summonerId));
+
     for (const team of event.data.teams) {
-      console.log(event.data);
       for (const player of team.players) {
+        // player.isPlayerTeam: true
+        console.log('plugin:report', reportAllies, myAllies, myAllies.teamId, team.teamId);
+        if (!reportAllies.value && myAllies.teamId === team.teamId) {
+          console.log(`- ${player.summonerName} was skipped because it's your allie.`);
+          continue;
+        }
+
+        if (!reportEnemies.value && myAllies.teamId !== team.teamId) {
+          console.log(`- ${player.summonerName} was skipped because it's your enemy.`);
+          continue;
+        }
+
         if (player.botPlayer) {
           console.log(`- ${player.summonerName} was skipped because it's a bot.`);
           continue;
