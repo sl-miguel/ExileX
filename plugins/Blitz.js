@@ -11,8 +11,8 @@ class Blitz {
 
     const configuration = [
       { id: 'blitz.radio', type: 'radio', value: 'Jungle', options: ['Lane', 'Jungle'] },
+      { id: 'blitz.checkbox', type: 'checkbox', value: ['A'], options: ['A', 'B', 'C'] },
       { id: 'blitz.button', type: 'button', text: 'Validate' },
-      { id: 'blitz.button.outline', type: 'button', text: 'Outline' },
     ];
 
     return configuration;

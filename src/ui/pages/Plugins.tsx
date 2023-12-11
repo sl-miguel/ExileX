@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import Toggle from '../components/settings/Toggle';
 import Slider from '../components/settings/Slider';
+import Checkbox from '../components/settings/Checkbox';
 import Radio from '../components/settings/Radio';
 import Text from '../components/settings/Text';
 import Button from '../components/settings/Button';
@@ -58,6 +59,7 @@ function Plugins() {
                 {setting.type === 'radio' && <Radio plugin={plugin} setting={setting} toParent={handleSettings} />}
                 {setting.type === 'text' && <Text plugin={plugin} setting={setting} toParent={handleSettings} />}
                 {setting.type === 'button' && <Button plugin={plugin} setting={setting} toParent={handlePress} />}
+                {setting.type === 'checkbox' && <Checkbox plugin={plugin} setting={setting} toParent={handleSettings} />}
               </div>
             ))}
           </AccordionBody>
