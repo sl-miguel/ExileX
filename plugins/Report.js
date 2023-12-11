@@ -30,6 +30,7 @@ class Report {
     const reportFriends = getSetting('report.friends');
     const reportEnemies = getSetting('report.enemies');
     const reportAllies = getSetting('report.allies');
+    const reportActive = getSetting('report.message.toggle');
     const reportMessage = getSetting('report.message.text');
 
     // Get accountInfos
@@ -76,8 +77,11 @@ class Report {
           continue;
         }
 
+        const DEFALT_MESSAGE = `I'm reporting ${player.summonerName} for toxic behavior during our recent game. They repeatedly used offensive language and displayed negative attitude, creating a disruptive environment.`;
+        console.log(reportActive.value ? reportMessage.value : DEFALT_MESSAGE);
+
         const report = {
-          comment: reportMessage.value,
+          comment: reportActive.value ? reportMessage.value : DEFALT_MESSAGE,
           gameId: event.data.gameId,
           categories: [
             'NEGATIVE_ATTITUDE',
