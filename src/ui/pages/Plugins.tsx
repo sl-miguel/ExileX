@@ -10,6 +10,7 @@ import Button from '../components/settings/Button';
 import Accordion from '../components/accordion/Accordion';
 import AccordionBody from '../components/accordion/AccordionBody';
 import AccordionHeader from '../components/accordion/AccordionHeader';
+import Paragraph from '../components/settings/Paragraph';
 
 function Plugins() {
   const [plugins, setPlugins] = useState([]);
@@ -60,6 +61,7 @@ function Plugins() {
                 {setting.type === 'text' && <Text plugin={plugin} setting={setting} toParent={handleSettings} />}
                 {setting.type === 'button' && <Button plugin={plugin} setting={setting} toParent={handlePress} />}
                 {setting.type === 'checkbox' && <Checkbox plugin={plugin} setting={setting} toParent={handleSettings} />}
+                {setting.type === 'paragraph' && <Paragraph setting={setting} />}
               </div>
             ))}
           </AccordionBody>

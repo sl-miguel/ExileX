@@ -1,7 +1,7 @@
 class Blitz {
   constructor() {
-    this.name = 'Blitz Mode (exploit)';
-    this.description = 'Plugin that can chose jungle or lane in the blitz gamemode.';
+    this.name = 'Test Mode';
+    this.description = 'Plugin that can test things.';
     this.active = false;
     this.endpoint = '/';
   }
@@ -11,6 +11,7 @@ class Blitz {
 
     const configuration = [
       { id: 'blitz.radio', type: 'radio', value: 'Jungle', options: ['Lane', 'Jungle'] },
+      { id: 'blitz.paragraph', type: 'paragraph', value: 'This a paragraph, it gives some details to the settings..' },
       { id: 'blitz.checkbox', type: 'checkbox', value: ['A'], options: ['A', 'B', 'C'] },
       { id: 'blitz.button', type: 'button', text: 'Validate' },
     ];
