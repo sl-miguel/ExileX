@@ -10,9 +10,9 @@ class Report {
     console.log('Report.js loaded.');
 
     const configuration = [
-      { id: 'report.allies', type: 'toggle', buble: 'If active it will report allies', text: 'Allies', value: true },
-      { id: 'report.friends', type: 'toggle', buble: 'If active it will report friends', text: 'Friends', value: false },
-      { id: 'report.enemies', type: 'toggle', buble: 'If active it will report enemies', text: 'Enemies', value: true },
+      { id: 'report.allies', type: 'toggle', bubble: 'If active it will report allies', text: 'Allies', value: true },
+      { id: 'report.friends', type: 'toggle', bubble: 'If active it will report friends', text: 'Friends', value: false },
+      { id: 'report.enemies', type: 'toggle', bubble: 'If active it will report enemies', text: 'Enemies', value: true },
       { id: 'report.message.toggle', type: 'toggle', text: 'Custom Message', value: true },
       { id: 'report.message.text', type: 'text', value: 'To much bots in Coop vs AI' },
       // { id: 'report.categories', type: 'checkbox', value: ['THIRD_PARTY_TOOLS'], options: ['NEGATIVE_ATTITUDE', 'VERBAL_ABUSE', 'LEAVING_AFK', 'ASSISTING_ENEMY_TEAM', 'HATE_SPEECH', 'THIRD_PARTY_TOOLS', 'INAPPROPRIATE_NAME'] },
