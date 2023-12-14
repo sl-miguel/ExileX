@@ -1,0 +1,48 @@
+name: Multi Platform Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  next-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check package.json version
+        id: check
+        uses: EndBug/version-check@v2
+
+    outputs:
+      package-version: ${{ steps.check.outputs.version }}
+      package-changed: ${{ steps.check.outputs.changed }}
+
+  release:
+    needs: [next-version]
+    runs-on: ${{ matrix.os }}
+    if: needs.next-version.outputs.package-changed == 'true'
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build for ${{ matrix.os }}
+        run: npm run release

@@ -13,19 +13,8 @@
     artifactName: '${productName}-Mac-${version}-Installer.${ext}',
   },
   win: {
-    target: [
-      {
-        target: 'portable',
-        arch: ['x64'],
-      },
-    ],
-    artifactName: '${productName}-Windows-${version}-Portable.${ext}',
-  },
-  nsis: {
-    oneClick: false,
-    perMachine: false,
-    allowToChangeInstallationDirectory: true,
-    deleteAppDataOnUninstall: false,
+    target: ['portable'],
+    artifactName: '${productName}-Windows-Portable-${version}.${ext}',
   },
   linux: {
     target: ['AppImage'],
