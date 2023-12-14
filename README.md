@@ -9,11 +9,11 @@ ExileX is a set of automation tools designed to enhance your League of Legends e
 
 ## 💾 Installation
 
-### Downloads
+### Downloads ([latest](https://github.com/sl-miguel/ExileX/releases/latest))
 
-- Windows
-- Linux
-- Mac Os
+- [Windows](https://github.com/sl-miguel/ExileX/releases/latest/download/exile-Windows-Portable-0.2.0.exe)
+- [Linux](https://github.com/sl-miguel/ExileX/releases/latest/download/exile-Linux-0.2.0.AppImage)
+- [Mac Os](https://github.com/sl-miguel/ExileX/releases/latest/download/exile-Mac-0.2.0-Installer.dmg)
 
 ### Development
 
