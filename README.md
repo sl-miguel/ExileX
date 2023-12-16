@@ -2,6 +2,10 @@
 
 ExileX is a set of automation tools designed to enhance your League of Legends experience.
 
+|           Loader            |           Home            |           Plugins            |
+| :-------------------------: | :-----------------------: | :--------------------------: |
+| ![](./docs/pics/loader.png) | ![](./docs/pics/home.png) | ![](./docs/pics/plugins.png) |
+
 ### Features
 
 - Accept your game, when pop up appears
