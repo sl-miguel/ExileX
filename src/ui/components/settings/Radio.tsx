@@ -15,7 +15,7 @@ function Radio({ plugin, setting, toParent }: RadioProps) {
   }, [value]);
 
   return (
-    <div className="flex h-9 gap-0.5 overflow-hidden rounded-md">
+    <div className="my-1 flex h-9 gap-0.5 overflow-hidden rounded-md">
       {setting.options.map((option: any, index: number) => (
         <div key={`${setting.id}_${index}`} className="flex-grow">
           <input
