@@ -75,8 +75,8 @@ class Plugin {
     if (!script) return;
 
     const getSetting = (settingId: string) => this.getSetting(id, settingId);
-    if (!script.active) return this.lcu.unsubscribe(script.endpoint);
-    this.lcu.subscribe(script.endpoint, async (_data: any, event: any) => await script.execute(getSetting, this.lcu, event));
+    if (!script.active) return this.lcu.unsubscribe(id, script.endpoint);
+    this.lcu.subscribe(id, script.endpoint, async (_data: any, event: any) => await script.execute(getSetting, this.lcu, event));
   }
 
   async activate(pluginId: string, settingId: string) {

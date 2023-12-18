@@ -3,10 +3,15 @@ import { BrowserWindow } from 'electron';
 const league = require('league-connect');
 import { LeagueWebSocket, Credentials, HttpRequestOptions } from 'league-connect';
 
+interface Subscription {
+  pluginId: string;
+  callback: Function;
+}
+
 class LeagueClientService {
   win: BrowserWindow;
   ws: LeagueWebSocket | null;
-  subscriptions: Map<string, Function>;
+  subscriptions: Map<string, Subscription[]>;
   credentials: Credentials | null;
 
   constructor(win: BrowserWindow) {
@@ -17,7 +22,7 @@ class LeagueClientService {
   }
 
   async connect() {
-    console.log('[Node] Wainting for league Client');
+    console.log('Wainting for league Client');
     this.ws = await league.createWebSocketConnection({
       authenticationOptions: {
         awaitConnection: true,
@@ -51,28 +56,50 @@ class LeagueClientService {
     });
   }
 
-  subscribe(endpoint: string, callback: Function) {
+  subscribe(pluginId: string, endpoint: string, callback: Function) {
     if (!this.ws) return;
-    if (this.subscriptions.has(endpoint)) this.unsubscribe(endpoint);
-    console.log('Subscribing to', endpoint);
+
+    const subscriptions = this.subscriptions.get(endpoint) || [];
+
+    const existingSubscriptionIndex = subscriptions.findIndex((sub) => sub.pluginId === pluginId);
+    if (existingSubscriptionIndex !== -1) {
+      console.log(`Plugin ${pluginId} is already subscribed to ${endpoint}`);
+      subscriptions[existingSubscriptionIndex].callback = callback; // Replace the existing callback
+      this.subscriptions.set(endpoint, subscriptions);
+      return;
+    }
+
+    // const existingSubscription = subscriptions.find((sub) => sub.pluginId === pluginId);
+    // if (existingSubscription) {
+    //   console.log(`Plugin ${pluginId} is already subscribed to ${endpoint}`);
+    //   return;
+    // }
+
+    console.log(`Subscribing plugin ${pluginId} to ${endpoint}`);
     this.ws.subscribe(endpoint, async (data, event) => await callback(data, event));
-    this.subscriptions.set(endpoint, callback);
+
+    subscriptions.push({ pluginId, callback });
+    this.subscriptions.set(endpoint, subscriptions);
   }
 
-  unsubscribe(endpoint: string) {
+  unsubscribe(pluginId: string, endpoint: string) {
     if (!this.ws) return;
-    if (!this.subscriptions.has(endpoint)) return;
-    console.log('Unsubscribing from', endpoint);
+
+    const subscriptions = this.subscriptions.get(endpoint) || [];
+    const updatedSubscriptions = subscriptions.filter((sub) => sub.pluginId !== pluginId);
+
+    console.log(`Unsubscribing plugin ${pluginId} from ${endpoint}`);
     this.ws.unsubscribe(endpoint);
-    this.subscriptions.delete(endpoint);
+
+    updatedSubscriptions.forEach((sub) => this.ws!.subscribe(endpoint, async (data, event) => await sub.callback(data, event)));
+    this.subscriptions.set(endpoint, updatedSubscriptions);
   }
 
   resubscribe() {
-    if (!this.ws) return;
-    for (const [endpoint, callback] of this.subscriptions) {
-      console.log('Resubscribing to', endpoint);
-      this.ws.subscribe(endpoint, async (data, event) => {
-        await callback(data, event);
+    for (const [endpoint, subscriptions] of this.subscriptions) {
+      subscriptions.forEach((subscription) => {
+        console.log('Resubscribing to', endpoint, subscription.pluginId);
+        this.ws!.subscribe(endpoint, async (data, event) => await subscription.callback(data, event));
       });
     }
   }
