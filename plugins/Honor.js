@@ -28,6 +28,11 @@ class Honor {
 
     if (!honorList.eligiblePlayers.length) return;
 
+    // More stats (first blood, vision score...)
+    // const responsHistory = await lcu.request({ method: 'GET', url: `/lol-match-history/v1/games/${honorList.gameId}` })
+    // const dataHistory = await responsHistory.json();
+    // console.log('HISTORY DATA', dataHistory);
+
     const honorsTypes = {
       Cool: 'COOL',
       Shotcalling: 'SHOTCALLER',
@@ -68,7 +73,13 @@ class Honor {
       default:
         const gameResponse = await lcu.request({ method: 'GET', url: '/lol-end-of-game/v1/eog-stats-block' });
         const gameStats = await gameResponse.json();
-        player = this.bestPlayer(gameStats.teams);
+
+        const baseStats = this.stats();
+        const bestStats = this.bestStats(gameStats.teams, baseStats);
+        const bestPlayers = this.bestPlayer(gameStats.teams, bestStats);
+        const bestScorePlayer = this.bestScore(bestPlayers);
+        player = bestScorePlayer.player;
+        console.log(`Best score is ${bestScorePlayer.player.championName} with: ${bestScorePlayer.score}`);
         break;
     }
 
@@ -84,26 +95,89 @@ class Honor {
     console.log('Done.', JSON.parse(data));
   }
 
-  bestPlayer(teams) {
-    let bestPlayer = null;
-    let highestScore = -Infinity;
+  bestPlayer(teams, stats, ignore = true) {
+    const playersScores = [];
 
     for (const team of teams) {
-      if (!team.isPlayerTeam) continue;
+      if (ignore && !team.isPlayerTeam) continue;
 
       for (const player of team.players) {
-        if (player.isLocalPlayer) continue;
+        if (ignore && player.isLocalPlayer) continue;
 
-        const score = this.score(player);
-        console.log(`${player.summonerName} (${player.championName}) has a score: ${score}`);
-        if (score <= highestScore) continue;
+        let score = 0;
+        console.log(`${player.championName} :`);
+        for (const stat in stats) {
+          let actualStat = player.stats[stat];
+          const { type, value: bestValue, weigth } = stats[stat];
+          console.log(`- ${stat} : ${bestValue}`);
 
-        highestScore = score;
+          if (type === 'lower') {
+            score += actualStat ? (bestValue / actualStat) * weigth : weigth / 5 + weigth;
+            continue;
+          }
+
+          score += (actualStat / bestValue) * weigth;
+        }
+
+        console.log(`- Score : ${score} \n`);
+        playersScores.push({ score, player });
+      }
+    }
+
+    return playersScores;
+  }
+
+  bestStats(teams, modifiedStats, ignore = false) {
+    const bestStats = structuredClone(modifiedStats);
+
+    for (const actualStat in bestStats) {
+      const element = bestStats[actualStat];
+      if (element.type === 'lower') element.value = Infinity;
+      else element.value = -Infinity;
+    }
+
+    for (const team of teams) {
+      if (ignore && !team.isPlayerTeam) continue;
+
+      for (const player of team.players) {
+        if (ignore && player.isLocalPlayer) continue;
+        const stats = player.stats;
+        for (const stat in stats) {
+          if (!(stat in bestStats)) continue;
+
+          const { type } = bestStats[stat];
+          switch (type) {
+            case 'lower':
+              if (bestStats[stat].value <= stats[stat]) continue;
+              bestStats[stat].value = stats[stat];
+              break;
+
+            default:
+              if (bestStats[stat].value >= stats[stat]) continue;
+              bestStats[stat].value = stats[stat];
+              break;
+          }
+        }
+      }
+    }
+
+    return bestStats;
+  }
+
+  bestScore(playersScores) {
+    let bestScore = -Infinity;
+    let bestPlayer = null;
+
+    for (const { score, player } of playersScores) {
+      console.log(`${player.championName} has a score: ${score} points.`);
+
+      if (score > bestScore) {
+        bestScore = score;
         bestPlayer = player;
       }
     }
 
-    return bestPlayer;
+    return { score: bestScore, player: bestPlayer };
   }
 
   random(array) {
@@ -111,25 +185,45 @@ class Honor {
     return array[randomIndex];
   }
 
-  score(player) {
-    const WEIGHT_KDA = 0.35;
-    const WEIGHT_VISION = 0.15;
-    const WEIGHT_DAMAGES_DEAL = 0.3;
-    const WEIGHT_DAMAGES_TAKEN = 0.2;
-
-    const SCORE_KILLS_AND_ASSISTS = player.stats.ASSISTS + player.stats.CHAMPIONS_KILLED;
-    const SCORE_KDA = player.stats.NUM_DEATHS ? SCORE_KILLS_AND_ASSISTS / player.stats.NUM_DEATHS : SCORE_KILLS_AND_ASSISTS;
-    const SCORE_VISION = player.stats.VISION_WARDS_BOUGHT_IN_GAME;
-    const SCORE_DAMAGES_DEAL = player.stats.TOTAL_DAMAGE_DEALT;
-    const SCORE_DAMAGES_TAKEN = player.stats.TOTAL_DAMAGE_TAKEN;
-
-    const CONTRIBUTION_KDA = SCORE_KDA * WEIGHT_KDA;
-    const CONTRIBUTION_VISION = SCORE_VISION * WEIGHT_VISION;
-    const CONTRIBUTION_DAMAGES_DEAL = SCORE_DAMAGES_DEAL * WEIGHT_DAMAGES_DEAL;
-    const CONTRIBUTION_DAMAGES_TAKEN = SCORE_DAMAGES_TAKEN * WEIGHT_DAMAGES_TAKEN;
-
-    const TOTAL = CONTRIBUTION_KDA + CONTRIBUTION_VISION + CONTRIBUTION_DAMAGES_DEAL + CONTRIBUTION_DAMAGES_TAKEN;
-    return TOTAL;
+  stats() {
+    return {
+      CHAMPIONS_KILLED: {
+        weigth: 1,
+        type: 'higher',
+      },
+      NUM_DEATHS: {
+        weigth: 1,
+        type: 'lower',
+      },
+      ASSISTS: {
+        weigth: 0.75,
+        type: 'higher',
+      },
+      TOTAL_DAMAGE_DEALT_TO_CHAMPIONS: {
+        weigth: 0.95,
+        type: 'higher',
+      },
+      TOTAL_DAMAGE_TAKEN: {
+        weigth: 0.75,
+        type: 'higher',
+      },
+      TOTAL_DAMAGE_SELF_MITIGATED: {
+        weigth: 0.2,
+        type: 'higher',
+      },
+      TIME_CCING_OTHERS: {
+        weigth: 0.15,
+        type: 'higher',
+      },
+      TOTAL_HEAL_ON_TEAMMATES: {
+        weigth: 0.25,
+        type: 'higher',
+      },
+      TOTAL_DAMAGE_SHIELDED_ON_TEAMMATES: {
+        weigth: 0.25,
+        type: 'higher',
+      },
+    };
   }
 }
 
