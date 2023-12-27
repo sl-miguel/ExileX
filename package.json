@@ -1,7 +1,7 @@
 {
   "name": "exile-x",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A League Client Companion with automatisations",
   "main": "dist-electron/main.js",
   "author": "Gredon",

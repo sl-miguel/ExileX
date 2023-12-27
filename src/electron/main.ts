@@ -50,22 +50,22 @@ const createWindow = async () => {
   lcu.connect();
 
   const pluginLoader = new Plugin(win, lcu);
-  await pluginLoader.load();
 
   async function startPlugins() {
     console.log('Loading plugins');
     const plugins = pluginLoader.get();
     for (const plugin of plugins) {
-      // @ts-ignore
       await pluginLoader.execute(plugin.id);
     }
   }
 
   pluginHandler(pluginLoader, win);
 
-  ipcMain.on('is-connected', (_, connected: boolean) => {
+  ipcMain.on('is-connected', async (_, connected: boolean) => {
     console.log('isConnected', connected);
-    if (connected) startPlugins();
+    if (!connected) return;
+    await pluginLoader.load();
+    await startPlugins();
   });
 
   ipcMain.on('settings[update]', async (_, { plugin, setting }) => {

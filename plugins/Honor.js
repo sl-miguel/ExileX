@@ -8,13 +8,24 @@ class Honor {
     this.endpoint = '/lol-gameflow/v1/gameflow-phase';
   }
 
-  setup() {
+  reload() {
+    return [{ id: 'honor.player.name', keys: ['options'] }];
+  }
+
+  async setup(lcu) {
     console.log('Honor.js loaded.');
+
+    const response = await lcu.request({ method: 'GET', url: `/lol-chat/v1/friends` });
+    const friends = response.json();
+
+    const defaultFriend = { puuid: '', summonerId: 0, gameName: 'Select a friend' };
+    const friendsObject = [defaultFriend, ...friends.map(({ puuid, summonerId, gameName }) => ({ puuid, summonerId, gameName }))];
 
     const configuration = [
       { id: 'honor.system', type: 'radio', value: 'Shotcalling', options: ['Cool', 'Shotcalling', 'GG', 'Skip'] },
       { id: 'honor.player.type', type: 'radio', value: 'Best Player', options: ['Best Player', 'Random', 'Custom'] },
-      { id: 'honor.player.name', type: 'text', value: 'GR0236621563#EUW' }, // temp
+      { id: 'honor.message', type: 'paragraph', value: 'When opting for custom, it prioritizes honoring the selected friend.' },
+      { id: 'honor.player.name', type: 'select', value: friendsObject[0], options: friendsObject }, // temp
     ];
 
     return configuration;
@@ -65,9 +76,8 @@ class Honor {
 
       case 'Custom':
         const customPlayer = getSetting('honor.player.name');
-        const [customName, customTag] = customPlayer.value.split('#');
-        const response = await lcu.request({ method: 'GET', url: `/lol-summoner/v1/summoners?name=${customName}%23${customTag}` });
-        player = await response.json();
+        console.log('CUSTOM PLAYER / FRIEND', customPlayer.value);
+        player = customPlayer.value;
         break;
 
       default:

@@ -52,7 +52,7 @@ class Plugin {
       const Plugin = await require(path);
 
       const plugin = new Plugin();
-      const settings = plugin.setup();
+      const settings = await plugin.setup(this.lcu);
 
       plugin.id = pluginPath;
       plugin.settings = settings;
@@ -60,6 +60,20 @@ class Plugin {
       const storedScript = await this.store.getItem(pluginPath);
       if (storedScript) {
         const parsedScript = JSON.parse(storedScript);
+
+        if ('reload' in plugin) {
+          const reloads = plugin.reload();
+
+          for (const { id, keys } of reloads) {
+            for (const key of keys) {
+              const reloadSetting = parsedScript.settings.find((set: any) => set.id === id);
+              const freshSetting = settings.find((set: any) => set.id === id);
+              reloadSetting[key] = freshSetting[key];
+            }
+          }
+          this.store.setItem(pluginPath, JSON.stringify(parsedScript));
+        }
+
         Object.assign(plugin, parsedScript);
         this.scripts.set(pluginPath, plugin);
         continue;
