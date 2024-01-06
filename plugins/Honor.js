@@ -119,14 +119,20 @@ class Honor {
         for (const stat in stats) {
           let actualStat = player.stats[stat];
           const { type, value: bestValue, weigth } = stats[stat];
-          console.log(`- ${stat} : ${bestValue}`);
+          console.log(`- ${stat} : ${actualStat}`);
 
           if (type === 'lower') {
             score += actualStat ? (bestValue / actualStat) * weigth : weigth / 5 + weigth;
             continue;
           }
 
+          if (!bestValue) {
+            console.log(`Best Value for ${stat} is ${bestValue} so ignore it.`);
+            continue
+          };
+          
           score += (actualStat / bestValue) * weigth;
+
         }
 
         console.log(`- Score : ${score} \n`);
@@ -171,6 +177,7 @@ class Honor {
       }
     }
 
+    console.log('Best Stats', bestStats);
     return bestStats;
   }
 
